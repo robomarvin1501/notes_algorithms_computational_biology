@@ -1,0 +1,116 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 1 - An Introduction to Algorithms in Molecular Biology}
+\author{Gidon Rosalki}
+\date{2025-10-19}
+
+
+\begin{document}
+\maketitle
+\noindent\textbf{Notice:} If you find any mistakes, please open an issue at \href{https://github.com/robomarvin1501/notes\_biology\_algorithms}{\texttt{https://github.com/robomarvin1501/notes\_biology\_algorithms}}
+
+
+\section{Course details}%
+\label{sec:Course details}
+
+This course is based on the book \textit{Biological Sequence Analysis}, by Richard Durbin.
+
+There is no exam in this course. The final grade is comprised of 15\% of writing a final paper (without AI). 35\% of
+homework (allowed to be done in pairs, and AI is allowed, with explicit mentioning of what the AI did). 40\% from a
+final project or hackathon (groups of 2 or 4), and 10\% on the midterm exam.
+
+\section{Introduction}%
+\label{sec:Introduction}
+To begin with, we shall create some definitions: \begin{enumerate}
+    \item Population (all cats in Tel Aviv)
+    \item Organisms (cat)
+    \item Organs / tissues (heart)
+    \item Cells ($10^{-5}m$)
+    \item Organelles ($10^{-6}m$)
+    \item Macro molecules (DNA, protein $10^{-7}m$)
+    \item Small molecules ($10^{-9}m$)
+    \item Atoms ($10^{-10}m$)
+\end{enumerate}
+
+We will mainly focus on cells, organelles, and macro molecules. These are with what molecular biology concerns itself. 
+
+\begin{enumerate}
+    \item DNA is made up of nucleotides, A, C, G, and T. 
+    \item RNA is also made of of nucleotides, but this time A, C, G, U. 
+    \item Proteins are made up of 20 different amino acids. 
+    \item Sugars. Surprising I know, but they are in fact made up of these sequences. They are not sugars like we eat on
+        the day to day, but are similar. (will not be greatly discussed in this course).
+    \item Lipids.
+\end{enumerate}
+
+
+DNA is comprised of the nucleotides A, C, G, and T, as stated above. It is comprised of a double helix, where each
+strand is a sequence of these nucleotides, and the opposing strand has the opposite nucleotide. A is always opposite T,
+and C is opposite G. RNA is very similar, but we replace T with U. A central dogma of molecular biology is that DNA is
+used for \textbf{replication}, and RNA is used for \textbf{transcription}. This RNA is then \textbf{translated}
+into proteins. In translation overall, we take a sequence of DNA, which is translated into RNA, and then into proteins.
+We may consider the translation of letters into binary / hexadecimal for representation on computer hard drives. The
+same data is stored, but it is kept in a different form. Another example of this is binary to hexadecimal. An
+interesting thing to note is that in 4 numbers of binary, there are 16 options, and naturally there are 16 letters in
+hexadecimal. Therefore, each sequence of 4 binary numbers can be stored as a single hexadecimal character. Similarly, in
+molecular biology, each sequence of 3 nucleotides from AAA to TTT (of which there are 64) can be translated into 1 of 21
+named codons, one of which is the STOP codon. Since $64 > 21$ note that many sequences of nucleotides
+translate into the same codon. \\ 
+Given this, if you have a sequence of DNA: CAATGTAACTGGTTTA... Should you see a start codon within it (ATG) then it is
+safe to assume that this is the start of the encoding for a protein. Finding the next STOP codon will indicate the end
+of said protein. It is possible that there will be many start codons before finding a stop codon. \\
+How DNA is translated is dependent on where is the start codon, and in which direction the DNA is read, i.e. which
+strand is the active encoding strand, and which start codon is then used. 
+
+When considering molecular biology algorithms, we do not just want to learn the algorithm, but rather also its context,
+why it was made, and why it works as it does. To understand this, we need the following: \begin{enumerate}
+    \item Biological question: Given a protein sequence, what is this protein? What is its function?
+    \item What is the relevant information / principle? If a sequence is similar, this can imply that there is a
+        common ancestor, and thus these sequences have the same function.
+    \item Data: A protein database, that maps sequences to functions. 
+    \item Algorithm / maths question: Sequence comparison / queries. This is the algorithmic question. Given someone who
+        does not understand biology, we can give them access to these data, and ask them to find similar sequences and
+        the like. This does leave us with questioning the definition: What is similarity?
+    \item Algorithm: Find the closest distance (As in, distances between sequences of letters) in the database
+    \item Parameter choice. Once upon a time we would simply choose the weight of a mistake. However, since we now live
+        in a world of data, we can \textbf{learn} a value, since different mistakes may have different impacts.
+        Therefore we can estimate the "distance" of true relationships.
+    \item Statistics: We also need to ask the probability that two things are similar by chance, rather than innately.
+    \item Visualisation / Explanation: Why should this be the case. This is distinct from statistics, since for example
+        the statistics will say there is an 80\% chance that this photo is a photo of a cat, but when visualising it,
+        one may see that this photo is of a cat.
+\end{enumerate}
+
+\end{document}
