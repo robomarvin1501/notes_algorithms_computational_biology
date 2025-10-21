@@ -69,11 +69,14 @@ through adding spaces. These alignments need not be minimal, for example: \[
 is an acceptable alignment. Not useful, perhaps, but still acceptable. Our only limitation regarding alignments is that
 we may not match (defined below) 2 spaces. \\
 
-Let us consider the following matching: \begin{enumerate}
-    \item C-GAGTG
-    \item CTAACTG
-\end{enumerate}
-In the first position, we have a \enquote{match}. Second position, where there is T to - we have an \enquote{indel}. In
+Let us consider the following matching: 
+\[
+    \begin{bmatrix}
+        C & - & G & A & G & T & G \\
+        C & T & A & A & C & T & G
+    \end{bmatrix}
+\]
+In the first position, we have a \enquote{match}. Second position, where there is T to $-$ we have an \enquote{indel}. In
 the third position, A and G do not match, and so we have a \enquote{mismatch}.
 
 In order to define how good a match is, we need to give scores to each of the options match, indel, and mismatch. These
