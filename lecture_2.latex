@@ -1,0 +1,119 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 2 - Sequence alignment}
+\author{Gidon Rosalki}
+\date{2025-10-21}
+
+
+\begin{document}
+\maketitle
+\section{Sequence alignment}%
+\label{sec:Sequence alignment}
+Let us suppose that we have three sequences: \begin{enumerate}
+    \item CTAACTG... 
+    \item GAGTG.... 
+    \item GACTG...
+\end{enumerate}
+As we can see, sequences 2 and 3 appear to be very similar, they appear directly above each other, and only have one
+letter of difference. What is less obvious, is the similarity between sequences 1 and 2. If we begin the second sequence
+from the first A of the first sequence, then they are remarkably similar, with only the difference of 2 letters.
+Additionally, we could just add 2 spaces between the first and second letters of the second sequence, and once again
+have a great degree of similarity between them.
+
+Let there be $s^*,t^* \in \left\{A, C, G, T, -\right\}^*$, such that $\left|s^*\right| = \left|t^*\right|$ (as in, two
+sequences of letters of the same length). Let us define a function $remove$ such that \[
+    remove \left(s^*\right) = s
+\]
+Effectively, the star indicates we are in the extended alphabet, that contains spaces. We may \textit{align} sequences
+through adding spaces. These alignments need not be minimal, for example: \[
+    \begin{bmatrix}
+        A & A & C & T & - & - & - \\
+        - & - & - & - & A & G & T \\
+    \end{bmatrix}
+\]
+is an acceptable alignment. Not useful, perhaps, but still acceptable. Our only limitation regarding alignments is that
+we may not match (defined below) 2 spaces. \\
+
+Let us consider the following matching: \begin{enumerate}
+    \item C-GAGTG
+    \item CTAACTG
+\end{enumerate}
+In the first position, we have a \enquote{match}. Second position, where there is T to - we have an \enquote{indel}. In
+the third position, A and G do not match, and so we have a \enquote{mismatch}.
+
+In order to define how good a match is, we need to give scores to each of the options match, indel, and mismatch. These
+are effectively learned parameters. Our question here would be \enquote{Given $s, t, \sigma$, find the alignment with
+the maximum score}.
+
+\subsection{Dynamic programming}%
+\label{sub:Dynamic programming}
+Since we learnt this in \textit{Algorithms}, we will go over this very quickly. The idea is that we want to split a
+large problem recursively down into smaller problems, that we can then solve quickly, and use their results to solve
+larger problems. \\ 
+How would we solve this with dynamic programming? Let us suppose the sequences $s, t$, such that \begin{gather*}
+    s = s_p T \\ 
+    t = t_p T
+\end{gather*}
+There are 3 options we may take when making $s^*, t^*$: \begin{gather*}
+    s_p^* T \\ 
+    t_p^* T \\ 
+    \text{====}  \\ 
+    s_p^* - \\ 
+    t_p^* T \\
+    \text{====}  \\ 
+    s_p^* T \\ 
+    t_p^* -
+\end{gather*}
+
+So, we may now solve \[
+    V \left(s, t\right) = \displaystyle\max_{} \begin{cases}
+        V \left(s_p, t_p\right) + \sigma \left(T, T\right), &\text{ s.t. }\left|s^*\right| = \left|t^*\right| \\
+        V \left(s_p, t\right) + \sigma \left(T, -\right), &\text{ } remove \left(s^*\right) = s \\
+        V \left(s, t_p\right) + \sigma \left(-, T\right), &\text{ } remove \left(t^*\right) = t \\
+    \end{cases}\]
+
+From here, we may build the table, such that \begin{gather*}
+    V \left[0, 0\right] = 0 \\
+    V \left[1, j\right] = max search \left\{s \left[1: i\right], t \left[1: j\right]\right\} \\ 
+    V \left[i, j\right] = \displaystyle\max_{} \begin{cases} 
+        V \left[i - 1, j - 1\right] + \sigma \left(s_i, t_i\right) \\ 
+        V \left[i - 1, j\right] + \sigma \left(s_i, -\right) \\
+        V \left[i, j - 1\right] + \sigma \left(-, t_i\right)
+\end{cases}
+\end{gather*}
+The best score will appear in the bottom right hand corner of the table.
+
+\end{document}
