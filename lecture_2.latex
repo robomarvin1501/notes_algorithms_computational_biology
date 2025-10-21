@@ -40,6 +40,8 @@
 
 \begin{document}
 \maketitle
+\noindent\textbf{Notice:} If you find any mistakes, please open an issue at \href{https://github.com/robomarvin1501/notes\_algorithms\_computational\_biology}{\texttt{https://github.com/robomarvin1501/notes\_algorithms\_computational\_biology}}
+
 \section{Sequence alignment}%
 \label{sec:Sequence alignment}
 Let us suppose that we have three sequences: \begin{enumerate}
@@ -107,13 +109,60 @@ So, we may now solve \[
 
 From here, we may build the table, such that \begin{gather*}
     V \left[0, 0\right] = 0 \\
-    V \left[1, j\right] = max search \left\{s \left[1: i\right], t \left[1: j\right]\right\} \\ 
+    V \left[1, j\right] = max score \left\{s \left[1: i\right], t \left[1: j\right]\right\} \\ 
     V \left[i, j\right] = \displaystyle\max_{} \begin{cases} 
         V \left[i - 1, j - 1\right] + \sigma \left(s_i, t_i\right) \\ 
         V \left[i - 1, j\right] + \sigma \left(s_i, -\right) \\
         V \left[i, j - 1\right] + \sigma \left(-, t_i\right)
 \end{cases}
 \end{gather*}
-The best score will appear in the bottom right hand corner of the table.
+The best score will appear in the bottom right hand corner of the table. However, this is just the score, and not the
+chosen matching. In order to find the chosen matching, we must work backwards through the table. We may work backwards
+to any of the following three cells: above, left upper diagonal, and left. We remember the paths that lead us to each
+cell, and may then chose whichever path that leads to the final cell that we like.
+
+Given $\left|s\right| = n, \left|t\right| = m$, this will use $O \left(n \cdot m\right)$ space, and $O \left(n \cdot
+m\right)$ time. This is polynomial, so in the eyes of the algorithms course, wonderful! However, it is nonlinear, so in
+the eyes of DAST, not so good. Additionally, we know that $m$ and $n$ are usually very large, so this is not great... \\ 
+Since space requires hardware, whereas time just requires us to wait, we will worry about space first, and then time,
+since we can (probably) just wait longer.
+
+\subsubsection{Linear space alignment}%
+\label{sub:Linear space alignment}
+The idea is that if we can know where the optimal alignment crosses the halfway points of the sequences, then we have
+split the problem into two smaller problems. So instead of \begin{gather*}
+    V \left[1, j\right] = max score \left\{s \left[1: i\right], t \left[1: j\right]\right\} \\ 
+\end{gather*}
+Let us define \begin{gather*}
+    U \left[1, j\right] = max score \left\{s \left[i + 1: n\right], t \left[j + 1: m\right]\right\} \\ 
+\end{gather*}
+So, the value of \begin{gather*}
+    V \left[\frac{n}{2}, j\right] + U \left[\frac{n}{2}, j\right]
+\end{gather*}
+
+From this, we will get the point that the optimal path crosses $\frac{n}{2} $. Now we have split the problem into the
+two sub problems, we can now repeat recursively. \\ 
+Now, how is this done in linear space? Well, we only need to save one cell in every column, so this will take $O
+\left(n\right)$ space. However, since we still do this calculation for every cell in the matrix, the time will still be
+$O \left(n \cdot m\right)$.
+
+\subsection{Different alignments}%
+\label{sub:Different alignments}
+There are two main types of alignments. Global alignment, and local alignment. Global alignment is interested in finding
+the alignment between the entire two sequences and is what we have discussed until now. Local alignment is looking if
+there are local sections within the sequences that align. For local alignment, let us define $V$ as follows:
+\begin{gather*}
+    V_l \left[i, j\right] = \displaystyle\max_{l \leq i, k \leq j} score \left\{ s \left[l: i\right], t \left[k:
+    j\right]\right\}  \\
+    V_l \left[i, j\right] = max \begin{cases}
+        V_l \left[i - 1, j - 1\right] + \sigma \left(s_i, t_j\right) \\
+        V_l \left[i - 1, j\right] + \sigma \left(s_i, -\right) \\
+        V_l \left[i, j - 1\right] + \sigma \left(-, t_j\right) \\
+        0
+    \end{cases}
+\end{gather*}
+Our matrix is now always non-negative.
+
+
 
 \end{document}
