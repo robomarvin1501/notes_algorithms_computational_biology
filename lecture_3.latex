@@ -1,0 +1,129 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 3}
+\author{Gidon Rosalki}
+\date{2025-10-26}
+
+
+\begin{document}
+\maketitle
+Last lecture we discussed the $\sigma$ function, that gives a weight to each pair of letters, for example: \begin{gather*}
+    \sigma: \Sigma \times \Sigma \to \R
+    \sigma \left(A, T\right) = -3 \\ 
+    \sigma \left(A, A\right) = 1
+\end{gather*}
+
+\section{Probabilistic models and Decision}\label{sec:probabilistic_models_and_decision} % (fold)
+Let us define probability. Probability is a method to define uncertainty about the world. We can put a probability that
+it will rain tomorrow, but we cannot \textit{know}. How can we make probabilities? Well, we can assign them based off
+real world data, such as what was the most frequent occurrence, or perhaps based off subjective feelings.
+
+So, we want to describe the uncertain world with probabilities. Let us consider something where we have information.
+Consider taking blood tests: We have lots of data from lots of blood tests taken over the decades. So, we may consider
+the probability that a person is healthy \[
+    \p_H \left(X\right)
+\]
+Where $X$ is the results of the blood tests.
+
+\subsection{Hypothesis testing}\label{sub:hypothesis_testing} % (fold)
+We have some types of hypothesis testing: \begin{enumerate}
+    \item One hypothesis: Is someone healthy or not 
+    \item Two hypothesis: Consider we know what people sick with flu appear to be. So now its \enquote{healthy} or
+        \enquote{sick with flu}
+\end{enumerate}
+Before we start making decisions on our hypotheses, we need to consider what is the meaning of the quality of a
+decision. 
+\begin{definition}[Decision rule]
+    \[
+        \tau \left(x\right) \to \left\{H, F\right\}
+    \]
+\end{definition}
+From this we create a matrix, between the truth, and the predicted result: \[
+    \begin{bmatrix}
+         & H (-) & F (+) \\
+        H (-) & TN & FN \\
+        F (+) & FP & TP
+    \end{bmatrix}
+\]
+Where the columns are the true result, and the rows are the predicted result. Thus we see true negative, false
+negative, false positive, and true positive. We may now create the probability matrix of results: \[
+    \begin{bmatrix}
+         & H & F \\
+        H & \frac{TN}{N}  & \frac{FN}{P}  \\
+        F & \frac{FP}{N}  & \frac{TP}{P} 
+    \end{bmatrix}
+\]
+
+We may also create the specificity matrix: \[
+    \begin{bmatrix}
+         & H & F \\
+        H & \frac{TN}{TN + FN}  & \frac{FN}{TN + FN}  \\
+        F & \frac{FP}{FP + TP}  & \frac{TP}{FP + TP} 
+    \end{bmatrix}
+\]
+From all this, we call $\frac{TP}{FP + TP} $ the \textbf{specificity}, and $\frac{TP}{P} $ the \textbf{sensitivity}. On
+a graph of sensitivity against specificity, we ideally we both to be as high as possible. Any hypothesised rule can be
+placed as a point at some point on that graph. Given two different points, of equal distance from the origin, we cannot
+necessarily say that one is better than the other, just that one is more sensitive, and one is more specific. The
+decision of which is better in this case is down to the user, and what their objective is.
+
+% subsection Hypothesis testing (end)
+
+\subsection{Neiman Peerson lemma}%
+\label{sub:Neyman Peerson lemma}
+\begin{theorem}[]
+    \[
+        \tau_t \left(x\right) = \begin{cases}
+            +, &\text{ if }\frac{\p_F \left(x\right)}{\p_H \left(x\right)} \geq t \\
+            -, &\text{ if }\frac{\p_F \left(x\right)}{\p_H \left(x\right)} < t \\
+            
+        \end{cases}
+    \]
+    $\tau$ is optimal / maximal \textbf{if and only if} $\exists t\ \forall x : \tau \left(x\right) = \tau_t \left(x\right)$
+\end{theorem}
+
+We will also need \textbf{Bayesian probability}: \begin{align*}
+    \p \left(+ | X\right) &= \frac{\p \left(X | +\right) \p \left(+\right)}{\p \left(X\right)} \\ 
+                          &= \frac{\p \left(X | +\right) \p \left(+\right)}{\p \left(X | +\right) \p \left(+\right) + \p
+                          \left(X | -\right) \p \left(-\right)}  \\ 
+    \p \left(X | +\right) &= \p_F \left(X\right) \\ 
+    \p \left(X | -\right) &= \p_H \left(X\right) \\ 
+    \p \left(+\right) &= \\ 
+    \p \left(-\right) &= \\ 
+\end{align*}
+% section Probabilistic models and Decision (end)
+
+\end{document}
