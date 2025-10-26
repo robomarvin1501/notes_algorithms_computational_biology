@@ -124,6 +124,48 @@ We will also need \textbf{Bayesian probability}: \begin{align*}
     \p \left(+\right) &= \\ 
     \p \left(-\right) &= \\ 
 \end{align*}
+
+\subsubsection{Single hypothesis}\label{sec:single_hypothesis} % (fold)
+For the purpose of demonstration, let us say that we are measuring only one number, for example body temperature. 
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.2]{lecture_3_types_of_error}
+    \caption{Types of error}
+\end{figure}
+A lower temperature generally indicates healthy, and higher generally unhealthy, but there is an amount of crossover in
+the middle, where we need to make a decision of a cut-off point, where above that indicates unhealthy, and below
+indicates healthy. For a probability $p_H \left(x\right)$, we have $H_0$, which indicates healthy, and $H_1$ which
+indicates \textbf{not} $H_0$. Since we are working with continuous probabilities, rather than discrete, we might for
+example find $\p_H \left(\text{Temp } > 38.5\right)$ (the area under the graph). This gives us the $p$-value.
+% subsubsection Single hypothesis (end)
+
+\subsection{Sequences}\label{sub:sequences} % (fold)
+Let there be 2 sequences $s, t$. We shall create $H_0$, that states that $s, t$ are independent, and $H_1$ that $s, t$
+share some common ancestor. We will write $\p_{H_0} = \p_0 \land \p_{H_1} = \p_1$. We will make some assumptions to
+decide this: \begin{itemize}
+    \item For $H_0$, we will say that positions are i.i.d. i.e. each position is not dependent on what comes before, or
+        after it: \begin{gather*}
+            \p \left(st\right) = \p_0 \left(s\right) \p_0 \left(t\right) \\ 
+            \p \left(s\right) = \displaystyle\prod_{i = 1}^{n} p_0 \left(s_i\right) \\
+            \p \left(t\right) = \displaystyle\prod_{i = 1}^{n} p_0 \left(t_i\right)
+        \end{gather*}
+    \item We will still say that the positions are i.i.d, but we will also say that the sequences are dependent: \begin{gather*}
+        \p_1 \left(s, t\right) = \displaystyle\prod_{i = 1}^{n} p_1 \left(s_i, t_i\right)
+    \end{gather*}
+\end{itemize}
+
+So, let us consider: \begin{align*}
+    \displaystyle\frac{\p_1 \left(s, t\right)}{\p_0 \left(s, t\right)} &= \displaystyle\prod_{i =
+    1}^{n}\displaystyle\frac{p_1 \left(s_i, t_i\right)}{p_0 \left(s_i\right) p_0 \left(t_i\right)} \\ 
+        \log \left(\displaystyle\frac{\p_1 \left(s, t\right)}{\p_0 \left(s, t\right)}\right) &= \displaystyle\sum_{i =
+    1}^{n}\log \left(\displaystyle\frac{p_1 \left(s_i, t_i\right)}{p_0 \left(s_i\right) p_0 \left(t_i\right)}\right) \\ 
+            Score \left(s, t\right) &= \displaystyle\sum_{i = 1}^{n}\sigma \left(s_i, t_i\right) \\ 
+            \implies \sigma \left(s, t\right) &= \log \left(\displaystyle\frac{\p_1 \left(s, t\right)}{\p_0
+            \left(s\right) \p_0 \left(t\right)}\right)
+\end{align*}
+% subsection Sequences (end)
+
+
 % section Probabilistic models and Decision (end)
 
 \end{document}
