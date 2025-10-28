@@ -123,5 +123,77 @@ working with more complex distributions.
 
 % section Data distribution (end)
 
+\section{Bayesian estimate}\label{sec:bayesian_estimate} % (fold)
+What happens with DNA? Well \[
+    x \left[1\right] \dots x \left[N\right] \in \left\{A, C, T, G\right\}
+\]
+So what has changed? Firstly, we will define a vector of parameters: \[
+    \theta = \left\langle \theta_A, \theta_C, \theta_G, \theta_T \right\rangle \in \left[0, 1\right]^4 \text{ s.t. } \theta_A +
+    \theta_C + \theta_G + \theta_T = 1
+\]
+
+So it is clear that $\p_\theta \left(A\right) = \theta_A$. What about our likelihood functions though? \begin{align*}
+    L \left(\theta\right) = \displaystyle\prod_{n}^{}\p_\theta \left(x \left[n\right]\right) = \theta_A^{N_A}\theta_C^{N_C}\theta_G^{N_G}\theta_T^{N_T}
+\end{align*}
+Where \begin{align*}
+    N_Z = \displaystyle\sum_{n}^{}\1_{x \left[n\right] = Z}
+\end{align*}
+
+So, how do we find the maximum of the LogLikelihood? We have 4 requirements, all done as partial derivatives: \begin{align*}
+    \displaystyle\frac{\partial}{\partial \theta_A} l \left(\theta\right) &= 0 \\
+    \displaystyle\frac{\partial}{\partial \theta_C} l \left(\theta\right) &= 0 \\
+    \displaystyle\frac{\partial}{\partial \theta_G} l \left(\theta\right) &= 0 \\
+    \displaystyle\frac{\partial}{\partial \theta_T} l \left(\theta\right) &= 0 \\
+\end{align*}
+So we're trying to find $\max_{\vec{\theta}} f \left(\vec{\theta} \right)$ such that $\vec{g} \left(\vec{\theta}\right)
+= 0$ where $\vec{g}$ is some other function/vector.
+
+to resolve this, let us consider the general form \begin{align*}
+    J \left(\vec{\theta}, \vec{\lambda}\right) &= f \left(\vec{\theta}\right) - \vec{\lambda} g
+    \left(\vec{\theta}\right) \\ 
+                                               &= N_A \log \left(\theta_A\right) + N_C \log \left(\theta_C\right) + N_G
+                                               \log \left(\theta_G\right) + N_T \log \left(\theta_T\right) - \lambda
+                                               \left(\theta_A + \theta_C + \theta_G + \theta_T - 1\right) \\ 
+    \displaystyle\frac{\partial}{\partial \theta_A}J &= \displaystyle\frac{N_A}{\theta_A} - \lambda \\ 
+    \theta_A &= \displaystyle\frac{N_A}{\lambda} \\ 
+    \displaystyle\frac{\partial}{\partial}\lambda &= - \left(\theta_A + \theta_C + \theta_G + \theta_T - 1\right) \\
+    \theta_A + \theta_C + \theta_T &= 1 \\
+    \hat{\theta}_A &= \displaystyle\frac{N_A}{N} \\
+    \hat{\theta} &= \left\langle \displaystyle\frac{N_A}{N}, \displaystyle\frac{N_C}{N}, \displaystyle\frac{N_G}{N}, \displaystyle\frac{N_T}{N},  \right\rangle
+\end{align*}
+So once again, we have worked very hard to get the intuition with which we began. This is a worrisome trend.
+
+\subsection{Alignment}\label{sub:alignment} % (fold)
+We shall now return to the question of finding alignments. Recall: \[
+    \sigma \left(s, t\right) = \log \left(\frac{\p_1 \left(s, t\right)}{\p_0 \left(s\right) \p_0 \left(t\right)} \right)
+\]
+
+We have the question \[
+    \p_0 \left(x\right)\ :\ x \in \Sigma
+\]
+and \[
+    \p_1 \left(x, y\right)\ :\ x, y \in \Sigma
+\]
+
+Let us consider how we learn $\p_1$. In $\p_1$, we want to look at two adjacent sequences. It is meant to be sequences,
+where they have a shared ancestry. However, this leads to the question of the chicken and the egg. We are using this to
+find alignments, so how can we know if they have a shared ancestor? \\ 
+To this end, we have \textit{sequence identity}. If we have 2 long enough sequences, then we may use non learned very
+stupid parameters (like 1, and -1 from previous lectures). Given this, if they have a $30\%$ sequence identity, then we
+can suppose that they are homologous (share an ancestor). As we approach 0, we can say that this is by chance. As
+discussed in stats, there is an area of false positives / negatives, where both results appear. \\
+Let us consider the area of 50\% to 60\%. We know that these sequences are not identical, but also that this is not
+similarity by chance. From this area, we can learn $\p_1$. \\ 
+There exists the alignment function BLOSUM NN, where the NN is a number, indicating the percentage of alignment. \\ 
+How do we handle indels though? Well, we add them into the score in our alignment. We generally add a high price for the
+first indel, but the more indels we have in a row, the lower the price. This results in a bias towards fewer, long
+indels, rather than more, shorter indels.
+
+
+% subsection Alignment (end)
+
+
+% section Bayesian estimate (end)
+
 
 \end{document}
