@@ -1,0 +1,127 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 4}
+\author{Gidon Rosalki}
+\date{2025-10-28}
+
+
+\begin{document}
+\maketitle
+\section{Data distribution}\label{sec:data_distribution} % (fold)
+We concluded last lecture with the formula \[
+    \sigma \left(s, t\right) = \log \left(\frac{\p_1 \left(s, t\right)}{\p_0 \left(s\right) \p_0 \left(t\right)} \right)
+\]
+Given some data, we want to learn its distribution. Our input will usually be a series of vectors $x[1] \dots x[N]$. In
+this, we will denote in brackets which vector, and subscript for where in the vector, for example $x_1 \left[N\right]$,
+is the first element, in the $n$th vector. We want to understand how to learn this, especially since unlike what was in
+IML, there are no labels. 
+
+Let us consider tacks, where we throw them in the air, and they will land either on the pin, or on their heads. Let's
+say if they land on the pin, we encode it $T$, and if they land on the head, we encode $H$. So, for $N$ pins, we have
+the following data: \[
+    x[1] \dots x[N] : x[n] \in \left\{H, T\right\}
+\]
+\subsection{Parameter}\label{sub:parameter} % (fold)
+With the parameter $\theta$ where \begin{gather*}
+    \p_\theta \left(H\right) = \theta \\ 
+    \p_\theta \left(T\right) = 1 - \theta
+\end{gather*}
+
+We can say that we want to learn the parameter \[
+    \eta = \displaystyle\frac{\p \left(H\right)}{\p \left(T\right)} = \displaystyle\frac{\theta}{1 - \theta}
+\]
+It is clear that $\eta \in \left[0, \infty\right]$. We can also create \begin{gather*}
+    \p_\eta \left(H\right) = \displaystyle\frac{\eta}{1 + \eta} \\ 
+    \p_\eta \left(T\right) = \displaystyle\frac{1}{1 + \eta}
+\end{gather*}
+
+There are near infinite ways to create parameters, but $\p_\theta$ and $\p_\eta$ are the most commonly accepted ones. 
+% subsection Parameter (end)
+
+\subsection{Likelihood}\label{sub:likelihood} % (fold)
+We shall define likelihood measures as follows: \begin{gather*}
+    l \left(\theta\right) = \displaystyle\sum_{n}^{}\log \left(\p_\theta \left(x[n]\right)\right) \\
+    L \left(\theta\right) = \displaystyle\prod_{n}^{}p_\theta \left(x \left[n\right]\right)
+\end{gather*}
+% subsection Likelihood (end)
+
+\subsection{Maximum Likelihood Estimator}\label{sub:maximum_likelihood_estimator} % (fold)
+MLE: \begin{align*}
+    \hat{\theta} &= \arg \max_\theta \left(L \left(\theta\right)\right) \\ 
+                 &= \arg \max_\theta \left(l \left(\theta\right)\right)
+\end{align*}
+
+% subsection Maximum Likelihood Estimator (end)
+
+
+\subsection{Example}\label{sub:example} % (fold)
+Let us return to our tack example above, where we throw 3, and get $H, T, T$. Using the first parameter, what is $L
+\left(\theta\right)$? \begin{align*}
+    L \left(\theta\right) &= \p_\theta \left(H\right) \p_\theta \left(T\right) \p_\theta \left(T\right) \\ 
+                          &= \theta \left(1 - \theta\right)^2 \\
+\end{align*}
+
+Our maximum occurs at $\theta = \displaystyle\frac{1}{3}$ (from the derivative).
+
+We will now define our \textbf{statistics}: \begin{gather*}
+    N_H = \displaystyle\sum_{n}^{}\1_{x \left[n\right] = H} \\
+    N_T = \displaystyle\sum_{n}^{}\1_{x \left[n\right] = T} = N - N_H
+\end{gather*}
+% subsection Example (end)
+
+\subsection{New formulas}%
+\label{sub:New formulas}
+Behold, we have new formulas (defined above): \begin{gather*}
+    \text{Likelihood: } L \left(\theta\right) = \theta^{N_H} \left(1 - \theta\right)^{N_T} \\ 
+    \text{LogLikelihood} l \left(\theta\right) = N_H \log \left(\theta\right) + N_T \log \left(1 - \theta\right)
+\end{gather*}
+We generally work with the LogLikelihood, since it is an easier function with which to work. \begin{align*}
+    l' \left(\theta\right) &= \displaystyle\frac{N_H}{\theta} + \displaystyle\frac{N_T}{1 - \theta} \\ 
+    0 &= \displaystyle\frac{N_H}{\theta} + \displaystyle\frac{N_T}{1 - \theta} \\ 
+    \implies \displaystyle\frac{N_H}{\theta} &= \displaystyle\frac{N_T}{1 - \theta} \\ 
+    \implies N_H = N_H \theta &= N_T \theta \\ 
+    \implies \hat{\theta} &= \displaystyle\frac{N_H}{N_H + N_T}
+\end{align*}
+Wonderful. We have spent the first half of a lecture convincing ourselves that the likelihood of an outcome for a binary
+distribution is dependent on the proportions. Not terribly useful on its own, but it will be useful in the future, when
+working with more complex distributions.
+
+
+
+% section Data distribution (end)
+
+
+\end{document}
