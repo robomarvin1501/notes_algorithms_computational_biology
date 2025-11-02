@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 5}
+\author{Gidon Rosalki}
+\date{2025-11-02}
+
+
+\begin{document}
+\maketitle
+
+Wow, this is a little light on content. This was a very biological lesson, with all teh concepts in Hebrew. I spent most
+of it a little lost.
+
+\section{Basic concepts}\label{sec:basic_concepts} % (fold)
+
+\subsection{Biological systems}\label{sec:biological_systems} % (fold)
+What is a system? A system is a group of joined components, working together to a common goal. A \textit{dynamic} system
+is a system that changes with time. An example of a dynamic system is Conway's Game of Life, where each cell is not
+particularly interesting in and of itself, but together create a much larger and more interesting system. \\ 
+
+A dynamic \textit{biological} system has various requirements to be considered such. It is a collection of parts that
+operate together to enable the requirements for life: \begin{itemize}
+    \item To collect information / energy / construction material 
+    \item To make choices 
+    \item To run plans 
+    \item To make adjustments 
+    \item To grow / reproduce 
+    \item To be protected from the surroundings
+\end{itemize}
+
+Models can strengthen, and explain known, and unknown properties. They can also decide unknown hypotheses, and provide
+control over properties of the system, providing the ability to change them according to our needs. Finally, it can help
+identify missing knowledge, which we can then measure in an experiment. 
+
+% subsection Biological systems (end)
+% section Basic concepts (end)
+
+\section{Integrated models of dynamic biological systems}\label{sec:integrated_models_of_dynamic_biological_systems} % (fold)
+To model is the process of creating new knowledge, from old knowledge. This can be a continuous process, where this new
+knowledge is then fed back into creating a new model. Let us consider a cell filter, size on the order of $0.1\mu m$.
+This allows through passive diffusion the entry of small inert macromolecules, ions, and water to diffuse passively
+through it into the cell, but blocks the large, inert macromolecules. This is incredibly impressive, such a small
+filter, with so much capability. The question is though, how does this work? Since we do not have a camera that can tell
+us, we need to create an integrative model. Firstly, we collect information about the system, through things like
+experiments, physics, intuition, statistics, and so on. Next we create a computerised mathematical model of the system,
+as we understand it right now. Next we find a good model of the system, and finally measure the correctness, and
+usefulness of this model. This is then fed back into the first step to try and create a more accurate model. 
+
+% section Integrated models of dynamic biological systems (end)
+
+\end{document}
