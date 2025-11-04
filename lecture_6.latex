@@ -1,0 +1,95 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 6}
+\author{Gidon Rosalki}
+\date{2025-11-04}
+
+
+\begin{document}
+\maketitle
+\section{Heuristics for Alignment}\label{sec:heuristics_for_alignment} % (fold)
+Often, the solution can be very expensive. Consider finding the subsequences in a sequence of length that is of the
+order of trillions. The proven best solution will still take a long time, and require large amounts of memory. A
+\textit{heuristic} solution is not the provably best solution, but should provide a good enough solution, in much
+smaller amounts of required processing power. A heuristic target is a target, that is smaller than our overall
+objective, which by reaching these targets, we can often wind up with a \enquote{good enough} solution.
+
+Let us consider some heuristic targets for aligning DNA: \begin{enumerate}
+    \item Many non gapped stretches 
+    \item Islands of identity
+\end{enumerate}
+
+Consider, the two sequences $s, t$, of lengths $n, m$ respectively. We want to check which words of length $k$ appear in
+both, as efficiently as we can. There are lots of beautiful solutions in $O \left(n \log \left(n\right)\right)$ from
+algorithms, but we could also simply create a hash table of the words. We can therefore check if any word appeared in
+the other sequence in $O \left(n\right)$ (yes, there are more problems, such as other collisions, but those are details,
+rather than the idea).
+
+\begin{wrapfigure}{r}{0.3\textwidth}
+    \center
+    \includegraphics[width=\linewidth]{lecture_6_FASTA}
+    \caption{FASTA}
+\end{wrapfigure}
+Consider the FASTA method, looking to heuristically match alignments of queries, vs the database. It follows the
+heuristic: \enquote{Good alignments have exact small matches}. It uses the following algorithm: \begin{enumerate}
+    \item Find promising matches (focusing on the top diagonals)
+    \item Re-score (using PAM), keeping the top scoring segments
+    \item Join segments using gaps
+    \item Finalise with DP, which is quick since most the work is already complete
+\end{enumerate}
+
+However, it is plausible that we might have many islands of identity, but all with a low score, for example, if we have
+some very rare words, but having them align is much more meaningful. This would be missed by FASTA, and can result in
+poor alignments. If we instead change our heuristics to \begin{enumerate}
+    \item Many non gapped stretches 
+        \iitem High score
+\end{enumerate}
+
+To resolve this, we have the BLAST algorithm. It passes over all the words in the sequence, and scores all the words
+with how worthwhile them aligning would be to the overall alignment. It instead follows the heuristic \enquote{Good
+alignments have multiple small hits} as follows: \begin{enumerate}
+    \item Break query into words 
+    \item Filter low scoring words 
+    \item Store in hash table
+    \item Run other sequences through the hash table (allowing for mismatches)
+    \item Find high scoring pairs (HSPs)
+    \item Extend the sequence
+\end{enumerate}
+% section Heuristics for Alignment (end)
+
+
+\end{document}
