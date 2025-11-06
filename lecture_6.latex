@@ -17,6 +17,8 @@
 \usepackage{wrapfig}
 \usepackage{tabularx}
 \usepackage[autostyle=true]{csquotes}
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
 \graphicspath{ {./images/} }
 \usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
 
@@ -76,7 +78,7 @@ However, it is plausible that we might have many islands of identity, but all wi
 some very rare words, but having them align is much more meaningful. This would be missed by FASTA, and can result in
 poor alignments. If we instead change our heuristics to \begin{enumerate}
     \item Many non gapped stretches 
-        \iitem High score
+    \item High score
 \end{enumerate}
 
 To resolve this, we have the BLAST algorithm. It passes over all the words in the sequence, and scores all the words
@@ -91,5 +93,48 @@ alignments have multiple small hits} as follows: \begin{enumerate}
 \end{enumerate}
 % section Heuristics for Alignment (end)
 
+\section{Markov chains}\label{sec:markov_chains} % (fold)
+Enables the Markov property \[
+    \p \left(X_{i + 1} | X_0, \dots, X_i\right) = \p \left(X_{i + 1} | X_i\right)
+\]
+An example of this is a drunken walk. Each new step location is \textit{only} dependent on the previous step, and no
+steps before that. \\
+The uniform Markov property is that \[
+    \forall i, j\ \p \left(X_{i + 1} = a | X_i = b\right) = \p \left(X_{j + 1} = a | X_j = b\right) = \tau \left[a, b\right]
+\]
+
+With these assumptions, we can write the following \begin{align*}
+    \p \left(X_1 \dots X_n\right) &= \p \left(X_1\right) \p \left(X_2 | X_1\right) \dots \p \left(X_n | X_1 \dots X_{n -
+    1}\right) \\ 
+                                  &= \p \left(X_1\right) \cdot \displaystyle\prod_{i = 1}^{n - 1} \p \left(X_{i + 1} |
+                                  X_i\right) \\
+                                  &= \p \left(X_1\right) \displaystyle\prod_{i = 1}^{n} \tau \left[X_{i + 1}, X_i\right]
+\end{align*}
+
+A Markov Chain may often be expressed as a state diagram:
+\begin{center}
+    \begin{tikzpicture}[node distance=3cm]
+        \node[state] (qa) {$A$};
+        \node[state, right of=qa] (qt) {$T$};
+        \node[state, below of=qa] (qc) {$C$};
+        \node[state, below of=qt] (qg) {$G$};
+
+
+        \draw   (qa) edge[->, loop left] node{} (qa)
+                (qa) edge[->, above] node{$\tau \left[T, A\right]$} (qt)
+                ;
+    \end{tikzpicture} \\
+\end{center}
+
+There are areas in the genome where the nucleotide C is followed by G. Areas where this occur are called \textit{CpG
+islands}, and areas where it does not occur are called \textit{CpG deserts}. These CpG sites generally imply the
+presence of a transcription start site. They are significant since the presence of the C followed by a G will be
+replicated in the reverse direction on the second strand of DNA, and are thus more likely to be preserved in
+replication.
+
+We can use our knowledge of CpG sites, their likelihoods, and Markov chains, and we can thus create a classifier to
+decide in what part of the genome a particular sample is located. However, how do we choose what is the beginning / end
+of an area? Consider homework 1, where we used DP to find segments that fit together. 
+% section Markov chains (end)
 
 \end{document}
