@@ -1,0 +1,213 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 7 - Hidden Markov Models}
+\author{Gidon Rosalki}
+\date{2025-11-09}
+
+
+\begin{document}
+\maketitle
+Since last lecture was a little confusing, we will begin by going over the definitions.
+
+\section{Definitions}\label{sec:definitions} % (fold)
+A Markov chain is comprised of \begin{align*}
+    \p \left[H_1 \dots H_n, X_1 \dots X_n\right] &= \p \left[H_1 \dots H_n\right] \p \left[X_1 \dots X_n | H_1 \dots
+    H_n\right] \\ 
+                                                 &= \p_0 \left[H_1\right] \displaystyle\prod_{i = 1}^{n - 1}\p
+                                                 \left[H_{i + 1} | H_i\right] \displaystyle\prod_{i = 1}^{n} \p
+                                                 \left[X_i | H_i\right] \\ 
+                                                 &= \p_0 \left[H_1\right] \left[\displaystyle\prod_{i = 1}^{n - 1} \tau
+                                                 \left[H_{i + 1}, H_i\right]\right] \cdot \displaystyle\prod_{i = 1}^{n}
+                                                 \pi \left[X_i, H_i\right]
+\end{align*}
+Consider a Markov chain as an automaton, where each state is \textit{only} dependent on the previous state. 
+
+\subsection{Example}\label{sub:example} % (fold)
+We will use the following example throughout the lecture. \\ 
+
+You play a game of betting. The die may either be Fair, or Loaded. The hidden information is whether the die is H or L,
+and we \textit{observe} results $\left[1, \dots, 6\right]$. We construct a matrix of 6 by 2, placing the possible
+outcomes of the die along the $y$, and F, L on the $x$, with the probabilities in the matrix. We will say that the fair
+die returns each result with a probability of $\displaystyle\frac{1}{6}$, and the loaded die returns 6 with
+$\displaystyle\frac{2}{3}$, and everything else with $\displaystyle\frac{1}{15}$: \[
+    \begin{bmatrix}
+         & F & L \\
+        1 & \frac{1}{6}  & \frac{1}{15}  \\
+        2 & \frac{1}{6}  & \frac{1}{15}  \\
+        3 & \frac{1}{6}  & \frac{1}{15}  \\
+        4 & \frac{1}{6}  & \frac{1}{15}  \\
+        5 & \frac{1}{6}  & \frac{1}{15}  \\
+        6 & \frac{1}{6}  & \frac{2}{3}  \\
+    \end{bmatrix}
+\]
+So, in our game, we input the hidden state ($H_i$), and then observe the output ($X_i$). Our objective becomes to find
+$H_1, \dots, H_n$ given $X_1, \dots, X_n$.
+
+% subsection Example (end)
+
+% section Definitions (end)
+
+\section{Questions}\label{sec:questions} % (fold)
+We can ask \[ 
+    \p \left[H_i | X_1, \dots, X_n\right] 
+\]
+Where we ask what is the probability of a hidden state, given all the prior information. We do not care how we got here,
+but only where we are. This can be contrasted to another question \[
+    arg \displaystyle\max_{h_i \dots h_n} \left\{\p \left[H_1 = h_1 \dots H_n = h_n | X_1, \dots, X_n\right]\right\} 
+\]
+Where we also ask \textit{how} we got here. Finally (for now), we may also consider the likelihood that this has
+happened: \[
+    \p \left[X_1, \dots, X_n\right]
+\]
+
+\subsection{Likelihood}\label{sub:likelihood} % (fold)
+By complete probability: \begin{align*}
+    \p \left[X_1, \dots, X_n\right] &= \displaystyle\sum_{h_1}^{} \dots \displaystyle\sum_{h_n}^{} \p \left[H_1 = h_1,
+    \dots, H_n = h_n, X_1 \dots X_n\right] \\ 
+\end{align*}
+This has the problem that we have an \textit{exponential} number of $n$s to consider, since every sum is over $n$,
+repeated $n$ times. We will try and convert this into a dynamic programming problem. \begin{align*}
+    \p \left[X_1, \dots, X_n\right] &= \displaystyle\sum_{h_n}^{} \p \left[H_n = h_n, X_1, \dots, X_n\right] \\ 
+    \p \left[H_n = h_n, X_1 \dots X_n\right] &= \displaystyle\sum_{h_{n - 1}}^{} \p \left[H_n = h_n, H_{n - 1} = h_{n -
+    1}, X_1 \dots X_n\right] \\ 
+            \text{Chain rule } &= \displaystyle\sum_{h_{n - 1}}^{} \p \left[X_n | H_n = h_n, H_{n - 1} =
+            h_{n - 1}, X_1 \dots X_{n - 1}\right] \p \left[H_n = h_n | H_{n - 1} = h_{n - 1}, X_1 \dots X_{n - 1}\right]
+            \p \left[H_{n - 1} = h_{n - 1}, X_1 \dots X_{n - 1}\right] \\ 
+                \text{Markov independence } &= \displaystyle\sum_{h_{n - 1}}^{} \pi \left[X_n, h_n\right] \tau
+                \left[h_n, h_{n - 1}\right] \cdot \p \left[H_{n - 1} = h_{n - 1}, X_1 \dots X_{n - 1}\right]
+\end{align*}
+We begin with complete probability twice. Let us define an object \[
+    F_i \left[s\right] = \p \left[H_i = s, X_1 \dots X_i\right]
+\]
+$F$ stands for Forward. We will note \begin{align*}
+    \p \left[H_n = h_n, X_1 \dots X_n\right] &= F_i \left[s\right] \\ 
+                     &= \pi \left[X_i, s\right] \displaystyle\sum_{t}^{}\tau \left[s,
+                                t\right]F_{i - 1} \left[t\right]
+\end{align*}
+We will also note, to aid with DP \begin{align*}
+    F_1 \left[s\right] &= \p \left[H_1 = s, X_1\right] \\ 
+                       &= \p_0 \left[s\right] \pi \left[X_1, s\right]
+\end{align*}
+
+We will create the $\tau$ transition matrix: \[
+    \begin{bmatrix}
+         & F & L \\
+        F & 0.99 & 0.05 \\
+        L & 0.01 & 0.95
+    \end{bmatrix}
+\]
+
+Let us suppose we observe $2, 6, 6$. \[
+    \begin{bmatrix}
+        Forward & 1 & 2 & 3 \\
+        F & \frac{1}{12} & 0.014 & 0.0025 \\
+        L & \frac{1}{20} & 0.024 & 0.01147 \\
+    \end{bmatrix}
+\]
+The probability of 6 (second values) given a fair die may be calculated: \[
+    \displaystyle\frac{1}{6} \left[\displaystyle\frac{99}{100} \cdot \displaystyle\frac{1}{12} +
+    \displaystyle\frac{5}{100} \cdot \displaystyle\frac{1}{20}\right]
+\]
+and when loaded: \[
+    \displaystyle\frac{1}{2} \left[\displaystyle\frac{1}{100} \cdot \displaystyle\frac{1}{2} +
+    \displaystyle\frac{95}{100} \cdot \displaystyle\frac{1}{20}\right]
+\]
+
+The 6 (third value) given a fair die \[
+    \displaystyle\frac{1}{6} \left[\displaystyle\frac{99}{100} \cdot 0.014 + \displaystyle\frac{5}{100} \cdot 0.024\right]
+\]
+and given a loaded die: \[
+    \displaystyle\frac{1}{2} \left[\displaystyle\frac{1}{100} \cdot 0.014 + \displaystyle\frac{95}{100} zcdot 0.024\right]
+\]
+% subsection Likelihood (end)
+
+\subsection{Log representation}\label{sub:log_representation} % (fold)
+Let us define $\hat{x} = \log \left(x\right)$. Also, we have \begin{align*}
+    b &= a \cdot \displaystyle\sum_{i}^{}c_i \\
+    \hat{b} &= \hat{a} + \log \displaystyle\sum_{i}^{}e^{\hat{c}_i} \\ 
+\end{align*}
+
+We will note that we can perform the following rewrite: \[
+    \log \displaystyle\sum_{i}^{}e^{\hat{c}_i} = \displaystyle\max_{i} \left\{\hat{c}_i\right\} + \log
+    \left(\displaystyle\sum_{j}^{}e^{\hat{c}_j  - \displaystyle\max_{i} \left\{\hat{c}_i\right\} }\right)
+\]
+This way we are keeping our maximum $\hat{c}_i$, and do not need to worry about taking the log of 0, since we have at
+least 1 number that will prevent that from happening.
+% subsection Log representation (end)
+
+\subsection{Where we are}\label{sub:where_we_are} % (fold)
+Our second question was \begin{align*}
+    \p \left[H_n = s | X_1 \dots X_n\right] &= \displaystyle\frac{\p \left[H_n = s , X_1 \dots X_n\right]}{\p \left[X_1
+    \dots X_n\right]} \\ 
+                                             &= \displaystyle\frac{F_n \left[s\right]}{\displaystyle\sum_{t}^{}F_n
+                                             \left[t\right]}
+\end{align*}
+If we convert this expression, to work on $i$ rather than $n$, then this does not hold, and it changes as follows:
+\begin{align*}
+    \p \left[H_i = s | X_1 \dots X_n\right] &= \p \left[h_i = s, x_1 \dots x_i\right] \cdot \p \left[x_{i + 1} \dots x_n
+    | H_i = s, x_1 \dots x_i\right] \\
+        \text{Markov independence }  &= \p \left[h_i = s, x_1 \dots x_i\right] \cdot \p \left[x_{i + 1} \dots x_n
+    | H_i = s\right] \\
+\end{align*}
+
+So, to calculate the likelihood, we will define backward \[
+    B_k \left(i\right) = \p \left[X_{i + 1} \dots X_n | H_i = k\right]
+\]
+So \begin{align*}
+    \p \left[H_i = s, X_1 \dots X_n\right] &= F_i \left[s\right] \cdot B_i \left[s\right] \\ 
+    B_i \left(s\right) &= \p \left[X_{i + 1} \dots X_n | H_i = s\right] \\ 
+                       &= \displaystyle\sum_{t}^{}\p \left[X_{i + 1} \dots X_n, H_{i + 1} = t | H_i = s\right] \\ 
+                       &= \displaystyle\sum_{t}^{}\p \left[X_{i + 2} \dots X_n | H_{i + 1} = t, X_{i + 1}, H_i =
+                       s\right] \p \left[X_{i + 1} | H_{i + 1} = t, H_i = s\right] \p \left[H_{i + 1} = t | H_i =
+                       s\right] \\
+    \implies B_i \left(s\right) &= \displaystyle\sum_{t}^{}B_{i + 1} \left(t\right) \pi \left[X_{i + 1}, t\right] \cdot
+    \tau \left[t, s\right] \\
+    B_n \left(s\right) &= 1 \\
+\end{align*}
+
+If we want to ask \[
+    \p \left[H_i = s | X_1 \dots X_n\right]
+\]
+Then we may: \begin{align*}
+    \p \left[H_i = s | X_1 \dots X_n\right] &= \displaystyle\frac{F_i \left[s\right] B_i
+    \left[s\right]}{\displaystyle\sum_{t}^{}F_i \left[t\right]B_i \left[t\right]}
+\end{align*}
+% subsection Where we are (end)
+
+% section Questions (end)
+
+\end{document}
