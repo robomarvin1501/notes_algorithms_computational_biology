@@ -1,0 +1,93 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 8}
+\author{Gidon Rosalki}
+\date{2025-11-11}
+
+
+\begin{document}
+\maketitle
+\section{Reminder}\label{sec:reminder} % (fold)
+Last lecture we discussed HMMs (Hidden Markov Models): \begin{align*}
+    \p \left[X_1 \dots X_n, H_1 \dots H_n\right] &= \p_0 \left[H_0\right] \cdot \displaystyle\prod_{i}^{}\p \left[H_{i +
+    1} | H_i\right] \cdot \displaystyle\prod_{i}^{}\p \left[X_i | H_i\right] \\ 
+            F_i \left[s\right] &= \p \left[H_i = s, X_1 \dots X_i\right] \\ 
+            B_i \left[s\right] &= \p \left[X_{i + 1} \dots X_n | H_i = s\right]
+\end{align*}
+
+We also discussed likelihood, with the probability of a chain being \begin{align*}
+    \p \left[X_1 \dots X_n\right] &= \displaystyle\sum_{s}^{} F_n \left[s\right] \\ 
+                                  &= \displaystyle\sum_{s}^{}B_1 \left[s\right] \p_1 \left[s\right] \\ 
+    \p \left[H_i = s | X_1 \dots X_n\right] &\propto F_i \left[s\right] \cdot B_i \left[s\right]  \\
+    \p \left[H_i = s | H_{i + 1} = t | X_1 \dots X_n\right] &\propto \text{ something, we will discuss soon}
+\end{align*}
+% section Reminder (end)
+
+\section{Maximum probability reconstruction}\label{sec:maximum_probability_reconstruction} % (fold)
+We want to find the most likely Markov Chain \begin{align*}
+    arg \displaystyle\max_{h_i \dots h_n} \left\{\p \left[H_1 = h_1 \dots H_n = h_n, X_1 \dots X_n\right]\right\} 
+\end{align*}
+How do we solve this problem? Dynamic Programming! I'm shocked! We will construct the following expression, to help us
+reach a problem solvable with DP: \begin{gather*}
+    \displaystyle\max_{h_1 \dots h_i} \left\{\p \left[H_1 = h_1 \dots H_i = h_i, X_1 \dots X_i\right]\right\} \\
+    \displaystyle\max_{h_1 \dots h_{i - 1}} \left\{\displaystyle\max_{h_i} \left\{\p \left[H_1 = h_1 \dots H_{i - 1} =
+    h_{i - 1}, X_1 \dots X_{i - 1}\right] \cdot \tau \left[h_i, h_{i - 1}\right] \cdot \pi \left[x_i, h_i\right]\right\} \right\} \\
+    = \displaystyle\max_{h_1 \dots h_{i - 1}} \left\{\p \left[H_1 = h_1, \dots, H_{i - 1} = h_{i - 1}, X_1 \ddots X_{i -
+    1}\right] \left(\displaystyle\max_{h_i} \left\{\tau \left[h_i, h_{i - 1}\right] \pi \left[x_{i}, h_i\right]\right\}
+    \right)\right\}  \\
+\end{gather*}
+Since \begin{align*}
+    \p \left[H_1 \dots H_i, X_1 \dots X_i\right] &= \p \left[H_1 \dots H_{i - 1}, X_1 \dots X_{i - 1}\right] \\ 
+                                                 &\cdot \p \left[H_i | H_1 \dots H_{i - 1}, X_1 \dots X_{i - 1}\right] \\ 
+                                                 &\cdot \p \left[X_i | H_i, H_1 \dots H_{i - 1}, X_1 \dots X_{i - 1}\right]
+\end{align*}
+The final solution for the optimum comes out to \[
+    V_i \left[s\right] = \displaystyle\max_{t} \left\{V_{i - 1} \left[t\right] \cdot \tau \left[s, t\right] \pi
+    \left[x_i, s\right]\right\} 
+\]
+So, the optimal solution, of length $i$, finishing at the point $H_i = s$, is the optimal solution until $H_{i - 1} =
+t$, of length $i - 1$, with the optimum transition between $s$ and $t$. \\
+Why are we using $V$? Due to the name of the algorithm being \textbf{Viterbi}, named after its creator Andwer Viterbi.
+
+Consider if you have a sequence $X_1 \dots X_n$, upon which you run Viterbi, and get $\hat{h}_1 \dots \hat{h}_n$. So, if
+we consider what happens at $i$: \begin{align*}
+    \p \left[H_i = \hat{h}_i | X_1 \dots X_n\right]
+\end{align*}
+What can we say about this?
+% section Maximum probability reconstruction (end)
+
+\end{document}
