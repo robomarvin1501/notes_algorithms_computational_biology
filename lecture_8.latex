@@ -90,4 +90,59 @@ we consider what happens at $i$: \begin{align*}
 What can we say about this?
 % section Maximum probability reconstruction (end)
 
+\section{Learning HMMs}\label{sec:learning_hmms} % (fold)
+Let us consider the full data \begin{align*}
+    \begin{bmatrix}
+        h_1 & h_2 & \dots & h_{n_1} \\
+        x_1 & x_2 & \dots & x_{n_2} \\
+    \end{bmatrix}
+\end{align*}
+So, firstly remember that each state is i.i.d. Then the probability of the data: \begin{align*}
+    \p \left[\text{Data}\right] &= \displaystyle\prod_{m}^{}\p \left[h_1 \left[m\right] \dots h_{n_m} \left[m\right],
+    X_1 \left[m\right] \dots X_{n_m} \left[m\right]\right] \\ 
+                                &= \displaystyle\prod_{m}^{} \left[p_0 \left[h_1 \left[m\right]\right]
+                                \displaystyle\prod_{i = 1}^{n_m - 1} \p \left[H_i = h_i \left[m\right] | H_{i - 1} =
+                            h_{i - 1} \left[m\right]\right]\right] \\ 
+                                &= \displaystyle\prod_{m}^{} \left[\p_0 \left[h_1 \left[m\right]\right]
+                                \displaystyle\prod_{i = 1}^{h_m - 1} \tau \left[h_i \left[m\right], h_{i - 1}
+                            \left[m\right]\right] \cdot \displaystyle\prod_{i}^{}\pi \left[X_i \left[m\right], h_i
+                    \left[m\right]\right]\right] \\ 
+\end{align*}
+Let us define a statistic that counts how many times we had $s$ \[
+    N_{0, s} = \displaystyle\sum_{m}^{}\1_{n_1 \left[m\right] = s}
+\]
+Where \begin{align*}
+    N_{t, s} &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i}^{}\1_{h_{i - 1} \left[m\right] = t, h_i \left[m\right] =
+    s} \\ 
+        N_{s, x} &= \displaystyle\sum_{r}^{}\displaystyle\sum_{i}^{}\1_{h_i \left[r\right] = s, X_{i} \left[r\right] = x}
+\end{align*}
+So: \begin{align*}
+    \p \left[\text{Data}\right] &= \displaystyle\prod_{m}^{}\p \left[h_1 \left[m\right] \dots h_{n_m} \left[m\right],
+    X_1 \left[m\right] \dots X_{n_m} \left[m\right]\right] \\ 
+                                &= \left[\displaystyle\prod_{s}^{}\p_0 \left[s\right]^{N_{0, s}}\right] \cdot
+                                \left[\displaystyle\prod_{t \in S}^{}\displaystyle\prod_{s \in S}^{} \tau \left[s,
+                                t\right]^{N_{t, s}}\right] \cdot \left[\displaystyle\prod_{s \in S}^{}
+                            \displaystyle\prod_{x \in \mathcal{X}}^{} \pi \left[x, s\right]^{N_{s, x}}\right]
+\end{align*}
+Where $\mathcal{X}$ is all the observations (ie, all the options that can happen in $\pi$).
+
+We can now also discuss for our MLE: \begin{align*}
+    \hat{p}_0 \left[s\right] &= \displaystyle\frac{N_0, s}{\displaystyle\sum_{t}^{}N_{0, t}} \\ 
+    \hat{\tau} \left[s, t\right] &= \displaystyle\frac{N_{t, s}}{\displaystyle\sum_{u}^{} N_{t, u}} \\ 
+    \hat{\pi} \left[s, x\right] &= \displaystyle\frac{N_{s, x}}{\displaystyle\sum_{y}^{}N_{s, y}}
+\end{align*}
+
+Let us now consider the case where we have many sequences $\left[X_1 \left[1\right], \dots, X_{n_1}
+\left[1\right]\right]$, and $\left[X_1 \left[2\right], \dots, X_{n_2} \left[2\right]\right]$. Our hidden state is now
+hidden. So \begin{align*}
+    \p \left[\text{Data}\right] &\stackrel{iid}{=}  \displaystyle\prod_{m}^{} \p \left[X_1 \left[m\right] \dots X_{n_m}
+    \left[m\right]\right] \\ 
+                                &= \displaystyle\prod_{m}^{}\displaystyle\sum_{n_i}^{}\displaystyle\sum_{h_{n_m}}^{} \p
+                                \left[\text{same contents}\right]
+\end{align*}
+So this is hard, because combining together sums and multiplications is difficult. We cannot simply extract the sums
+from each other. We also do not know \textit{anything} about the hidden states, there could be many between every other
+state.
+% section Learning HMMs (end)
+
 \end{document}
