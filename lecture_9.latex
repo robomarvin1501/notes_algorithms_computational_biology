@@ -40,7 +40,6 @@
 
 
 \begin{document}
-\setstcolor{red}
 \maketitle
 \section{Definitions reminder}\label{sec:definitions_reminder} % (fold)
 \begin{align*}
@@ -103,11 +102,38 @@ Here $\vec{N}$ is the collection of statistic defined earlier, concerning $N$. \
                                                         &= \p \left[X_1 \dots X_i, H_i = s\right] \\ 
                                                         & \p \left[X_{i + 2} \dots X_n | H_{i + 1} = t\right] \\ 
                                                         & \p \left[H_{i + 1} = t | H_i = s\right] \\
-                                                        & \p \left[X_{i + 1} | H_{i + 1} = t\right] 
+                                                        & \p \left[X_{i + 1} | H_{i + 1} = t\right]  \\
                                                         &= F_i \left[\right] B_{in} \left[t\right] \cdot \tau \left[t,
-                                                        s\right] \cdot \pi \left[X_{i + 1}, t\right]
-
+                                                        s\right] \cdot \pi \left[X_{i + 1}, t\right] \\
+        \E \left[N_{s, t} | \vec{X}, \vec{\Theta}\right] &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i = 1}^{n_m - 1}
+        \1_{H_i \left[m\right] = s, H_{i + 1} \left[m\right] = t | \vec{X}, \vec{\Theta}} \\ 
+                                                         &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i = 1}^{n_m - 1}
+                                                         \p \left[H_i \left[m\right] = s, H_{i + 1} \left[m\right] = t |
+                                                         \vec{X} \left[m\right], \vec{\Theta}\right] \\
+                                                         &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i}^{}
+                                                         \displaystyle\frac{F_i^m \left[s\right] B_{i + 1}^m
+                                                         \left[t\right] \tau \left[t, s\right] \pi \left[X_{i + 1},
+                                                     t\right]}{\p \left[\vec{X} \left[m\right]\right]}
 \end{align*}
+So let us write some pseudocode: % \usepackage{algorithm,algorithmicx,algpseudocode}
+\begin{algorithm}[h!]
+    \floatname{algorithm}{}
+    \algrenewcommand\algorithmicrequire{\textbf{Input: }}
+    \algrenewcommand\algorithmicensure{\textbf{Output: }}
+    \caption{}\label{alg:}
+    \begin{algorithmic}[1]
+        \Require $input$
+        \Ensure $output$
+        \State $\Theta^1 \gets$ unit
+        \For{j=1$\dots$}
+            \State Run forward / backward for all $m$
+            \State Collect $\E \left[N^j\right]$ with F / B
+            \State $\Theta^{j + 1} \gets MLE \left(\vec{N}^j\right)$
+        \EndFor
+        \State \textbf{return} $state$
+    \end{algorithmic}
+\end{algorithm}
+
 % section Max0Max (end)
 
 
