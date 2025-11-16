@@ -1,0 +1,114 @@
+\documentclass{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 9 - Hidden Markov Models}
+\author{Gidon Rosalki}
+\date{2025-11-16}
+
+
+\begin{document}
+\setstcolor{red}
+\maketitle
+\section{Definitions reminder}\label{sec:definitions_reminder} % (fold)
+\begin{align*}
+    \p \left[X_1 \dots X_n, H_1 \dots H_n\right] &= \p_0 \left[H_0\right] \cdot \displaystyle\prod_{i}^{}\p \left[H_{i +
+    1} | H_i\right] \cdot \displaystyle\prod_{i}^{}\p \left[X_i | H_i\right] \\ 
+            N_{0, s} &= \displaystyle\sum_{m}^{}\1_{H_1 \left[m\right] = s} \\
+    N_{s, t} &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i}^{}\1_{H_{i - 1} \left[m\right] = t, H_i \left[m\right] =
+    s} \\ 
+        N_{s, x} &= \displaystyle\sum_{r}^{}\displaystyle\sum_{i}^{}\1_{h_i \left[r\right] = s, X_{i} \left[r\right] = x}
+\end{align*}
+
+% section Definitions reminder (end)
+
+\section{Max-Max}\label{sec:max_max} % (fold)
+Let there be \[
+    \Theta = \left\langle \p_0, \tau, \pi \right\rangle
+\]
+The Data variable is simply a matrix of $n$ by $m$, with each cell containing $X_{i_j} \left[j\right]$.
+We have max step where \begin{align*}
+    \vec{H} &\gets arg \displaystyle\max_{H} \left\{\vec{H} | Data\right\}  \\
+    N^j &\gets \text{Count on } \vec{H}^j \\
+\end{align*}
+And then we can get Max-Max $\max \p \left[H, X_i, \Theta\right]$
+
+We will overall ask (a lot happened, I got lost) \begin{align*}
+    \vec{N}^j &\gets \E \left[\vec{N} | \vec{X}, \Theta^j\right] \\ 
+              &= \displaystyle\sum_{\vec{H}}^{}\p \left[H | \vec{X}, \Theta^j\right]\vec{N} \left(H\right)
+\end{align*}
+Here $\vec{N}$ is the collection of statistic defined earlier, concerning $N$. \begin{align*}
+    \E \left[\vec{N} | \vec{X}, \Theta^j\right] &= \displaystyle\sum_{m}^{}\E \left[\1_{H_1 \left[m\right] = s} |
+    \vec{X}, \vec{\Theta}\right] \\ 
+                                                &= \displaystyle\sum_{m}^{}\p \left[H_1 \left[m\right] = s | \vec{X},
+                                                \vec{\Theta}\right] \\ 
+                                                &= \displaystyle\sum_{m}^{} \p \left[H_1 \left[m\right] = s | \vec{X}
+                                                \left[m\right], \vec{\Theta}\right] \\ 
+                                                &= \displaystyle\sum_{m}^{}\displaystyle\frac{F_1^m \left[s\right] \cdot
+                                                B_1^s \left[s\right]}{\p \left[\vec{X} \left[m\right] | \Theta\right]} \\
+        \E \left[N_{s, x} | \vec{X}, \vec{\Theta}\right] &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i}^{} \E
+        \left[\1_{X_i = x, H_i = s} | \vec{X}, \vec{\Theta}\right] \\ 
+                                                         &= \displaystyle\sum_{m}^{}\displaystyle\sum_{i}^{} \p
+                                                         \left[X_i \left[m\right] = x, H_i \left[m\right] = s | \vec{X},
+                                                         \vec{\Theta}\right] \\ 
+                                                         &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i, X_i
+                                                         \left[m\right] = x}^{} \p \left[H_i \left[m\right]= s | \vec{X}
+                                                     \left[m\right], \vec{\Theta}\right] \\ 
+                                                         &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i, X_i
+                                                         \left[m\right] = x}^{} \displaystyle\frac{F_i^m \left[s\right]
+                                                     B_i^m \left[s\right]}{\p \left[\vec{X} \left[m\right]\right]} \\
+        \E \left[N_{s, t} | \vec{X}, \vec{\Theta}\right] &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i = 1}^{n_m - 1}
+        \1_{H_i \left[m\right] = s, H_{i + 1} \left[m\right] = t | \vec{X}, \vec{\Theta}} \\ 
+                                                         &= \displaystyle\sum_{m}^{} \displaystyle\sum_{i = 1}^{n_m - 1}
+                                                         \p \left[H_i \left[m\right] = s, H_{i + 1} \left[m\right] = t |
+                                                         \vec{X} \left[m\right], \vec{\Theta}\right] \\
+        \p \left[H_i = s, H_{i + 1} = t, \vec{X}\right] &= \p \left[X_1 \dots X_i, H_i = s\right] \\ 
+                                                        & \p \left[X_{i + 2} \dots X_n | H_{i + 1} = t, X_{1} \dots
+                                                        X_i, H_i = s\right] \\ 
+                                                        & \p \left[H_{i + 1} = t | H_i = s, X_1 \dots X_i\right] \\
+                                                        & \p \left[X_{i + 1} | H_{i + 1} = t, H_i = s, X_1 \dots X_i,
+                                                        X_{i + 2} \dots X_n\right]  \\
+                                                        &= \p \left[X_1 \dots X_i, H_i = s\right] \\ 
+                                                        & \p \left[X_{i + 2} \dots X_n | H_{i + 1} = t\right] \\ 
+                                                        & \p \left[H_{i + 1} = t | H_i = s\right] \\
+                                                        & \p \left[X_{i + 1} | H_{i + 1} = t\right] 
+                                                        &= F_i \left[\right] B_{in} \left[t\right] \cdot \tau \left[t,
+                                                        s\right] \cdot \pi \left[X_{i + 1}, t\right]
+
+\end{align*}
+% section Max0Max (end)
+
+
+\end{document}
