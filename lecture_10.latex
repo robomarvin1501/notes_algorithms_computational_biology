@@ -1,0 +1,64 @@
+\documentclass[a4paper]{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 10 - Genome and Chromatin}
+\author{Gidon Rosalki}
+\date{2025-11-18}
+
+
+\begin{document}
+\maketitle
+There are sections of the genome, with sequences, where there are inverse sequences on specific proteins. These proteins
+are called \enquote{transcription factors}, and the process is \enquote{DNA-binding protein with sequence preference}.
+The area on the DNA is called the binding site. This process enables the unwrapping of the protein, and the DNA, for
+generating RNA. This RNA is then converted into proteins, between its own start and stop codons. 
+
+This then ties into \textit{immunoprecipitation}, which is the process of precipitating protein antigens out of
+solution, using an antibody that specifically binds to that protein. This can be used for isolating proteins out of a
+solution containing thousands of different proteins. 
+
+\textit{Histones} are highly basic proteins, that are found in eukaryotic cell nuclei and in most Archaeal phyla. They
+act as spools around which DNA winds to create structural units called \textit{nucleosomes}. Histones prevent DNA from
+becoming tangled and protect it from DNA damage. In addition, histones play important roles in gene regulation and DNA
+replication. Without histones, unwound DNA in chromosomes would be very long. For example, each human cell has about 1.8
+meters of DNA if completely stretched out; however, when wound about histones, this length is reduced to about 9
+micrometers (0.009 mm) of 30 nm diameter chromatin fibres.
+
+
+
+
+
+\end{document}
