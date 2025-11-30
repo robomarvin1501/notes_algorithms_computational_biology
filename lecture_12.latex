@@ -1,0 +1,136 @@
+\documentclass[a4paper]{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage{bookmark}
+\usepackage{bbm}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage[autostyle=true]{csquotes}
+\graphicspath{ {./images/} }
+\usepackage[bottom=0.5cm, right=1.5cm, left=1.5cm, top=1.5cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{exercise}{Exercise}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}[section]
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\p}{\ensuremath{\mathbb{P}}}
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\1}{\ensuremath{\mathbbm{1}}}
+\newcommand{\B}{\ensuremath{\mathbbm{B}}}
+
+\title{Lecture 12 - Phylogenetic trees}
+\author{Gidon Rosalki}
+\date{2025-11-30}
+
+
+\begin{document}
+\maketitle
+\section{Phylogenetic trees}\label{sec:phylogenetic_trees} % (fold)
+Phylogenetic trees are graphical representations that show the evolutionary between a set of species or taxa over time.
+Generally in our case, they will be downward growing binary trees. We can do this since mathematically, if we allow very
+short branches, then any tree may be described by a binary tree. It should also be noted that there are also \textit{non
+rooted tree}, which may also be considered to be \textit{undirected} (commentary, the book does not refer to undirected
+trees, nor does it make particular logical sense. However, Nir did, so know this we must). In unrooted trees, the time
+direction is undetermined, and we know not the root node. In the rooted version, we will say that the parent node of 2
+other nodes is the \textit{last common ancestor}.
+
+Building these trees is our objective. Given some sequences we can (using knowledge gained from the beginning of the
+course) create a matrix of distances between all the sequences. From there, we can use the UPGMA (Unweighted Pair Group
+Method using arithmetic Averages) algorithm to create the trees: \\ 
+First we will define the distance $d_{ij}$ to be the distance between two clusters $C_i, C_j$ as follows: \[
+    d_{ij} = \displaystyle\frac{1}{\left|C_i\right| \left|C_j\right|} \displaystyle\sum_{p \in C_i,\ q \in C_j}^{}d_{pq}
+\]
+% \usepackage{algorithm,algorithmicx,algpseudocode}
+\begin{algorithm}
+    \floatname{algorithm}{UPGMA}
+    \algrenewcommand\algorithmicrequire{\textbf{Distances matrix}}
+    \algrenewcommand\algorithmicensure{\textbf{Tree}}
+    \caption{}\label{alg:}
+    \begin{algorithmic}[1]
+        \Require $input$
+        \Ensure $output$
+        \State \textbf{Initialisation:}
+            \State Assign each sequence $i$ to a cluster $C_i$
+            \State Define one leaf $T$ for each sequence, and place at height 0
+        \State \textbf{Iteration:}
+        \State Determine the two clusters $i, j$ for which $d_{ij}$ is minimal. If > 2 of equal weight, choose randomly
+        \State Define a new cluster $k$ s.t. $C_k = C_i \cup C_j$
+        \State Define a node $k$, with daughters $i, j$, and place at height $\frac{d_{ij}}{2}$
+        \State Add $k$ to the current clusters, and remove $i$, and $j$
+        \State \textbf{Termination:}
+        \State When only two clusters, $i, j$ remain, place the root at height $\frac{d_{ij}}{2}$
+    \end{algorithmic}
+\end{algorithm}
+
+However, UPGMA has its issues. If the nodes that are closest in length, are not those that share a common ancestor, then
+they will be misrepresented by UPGMA: 
+\begin{figure}[H]
+    \center
+    \includegraphics[scale=0.2]{lecture_12_upgma_issues}
+    \caption{A tree (left) that is reconstructed incorrectly by UPGMA (right)}
+\end{figure}
+
+\subsection{Neighbour joining}\label{sub:neighbour_joining} % (fold)
+In describing the molecular clock property, we have implicitly assumed additivity. The edge lengths of a tree are said
+to be \textit{additive} if the distance between any pair of leaves is the sum of the lengths of of the edges of the path
+connecting them. It is possible to for the molecular clock property to fail, but additivity to hold. \\
+Given a tree $T$, with additive lengths $\left\{d\right\}$, we may try to reconstruct it from the pairwise distances of
+its leaves $\left\{d_{ij}\right\}$ as follows: Find a pair of \textit{neighbouring leaves}, i.e. leaves that have the
+same parent node $k$. Suppose that their numbers are $i, j$. Remove them from the list of leaf nodes, and add $k$ to the
+current list of ndoes, defining its distance to leaf $m$ by \[
+    d_{km} = \displaystyle\frac{1}{2} \left(d_{im} + d_{jm} - d_{ij}\right)
+\]
+By additivity, the distances $d_{km}$ are precisely those between the equivalent nodes in the original tree. In this
+way, we can strip away leaves, reducing the number by 1 at each operation, until we get down to a pair of leaves. If we
+could determine from distances alone a pair of neighbouring leaves, therefore, we could reconstruct a tree with additive
+length exactly. To avoid the problem that UPGMA encountered, of incorrectly reconstructing nodes based off the
+distances, we will first subtract the average distances to all other leaves, thus compensating for long edges. We will
+define \begin{gather}
+    D_{ij} = d_{ij} - \left(r_i + r_j\right) \\ 
+    r_i = \displaystyle\frac{1}{\left|L\right| - 2} \displaystyle\sum_{k \in L}^{}d_{ik}
+\end{gather}
+Where $\left|L\right|$ is the size of the set of leaves $L$. We claim that leaves $i, j$, for which $D_{ij}$ is minimal
+will be neighbouring leaves. Thus, we may construct the following algorithm for neighbour joining: 
+
+% \usepackage{algorithm,algorithmicx,algpseudocode}
+\begin{algorithm}
+    \floatname{algorithm}{Neighbour-joining}
+    \algrenewcommand\algorithmicrequire{\textbf{}}
+    \algrenewcommand\algorithmicensure{\textbf{}}
+    \caption{}\label{alg:}
+    \begin{algorithmic}[1]
+        \State \textbf{Initialisation:}
+        \State Define $T$ to be the set of leaf nodes, one for each given sequence, and assign $L = T$
+        \State \textbf{Iteration:}
+        \State Pick a pair $i, j$ in $L$ for which $D_{ij}$ is minimal
+        \State Define a new node $k$, and set $\forall m \in L\ d_{km} = \displaystyle\frac{1}{2} \left(d_{im} + d_{jm} - d_{ij}\right)$
+        \State Add $k$ to $T$ with edges of lengths $d_{ik} = \displaystyle\frac{1}{2} \left(d_{ij} + r_i - r_j\right),\
+        d_jk = d_{ij} - d_{ik}$ joining $k$ to $i, j$ respectively
+        \State Remove $i, j$ from $L$, and add $k$
+        \State \textbf{Termination:}
+        \State When $L$ consists of two leaves, $i, j$ add the remaining edge between $i$, and $j$, with length $d_{ij}$
+    \end{algorithmic}
+\end{algorithm}
+
+% subsection Neighbour joining (end)
+
+
+% section Phylogenetic trees (end)
+
+\end{document}
