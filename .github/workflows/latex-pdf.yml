@@ -23,7 +23,6 @@ jobs:
           for file in *.latex; do
             name="${file%.latex}"
             lualatex -interaction=nonstopmode -output-directory=public "$file"
-            mv "$name.pdf" public/
           done
 
       - name: List files before deployment
