@@ -82,15 +82,7 @@ jobs:
           echo "</ul></body></html>" >> $INDEX
 
 
-      # - name: Upload PDFs to GitHub Pages
-      #   uses: actions/upload-pages-artifact@v3
-      #   with:
-      #     path: ./public
-
-      - name: Upload artifact for Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+      - name: Upload PDFs to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: notes-algorithms-computational-biology
-          directory: public
+          path: ./public
