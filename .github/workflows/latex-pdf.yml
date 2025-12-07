@@ -12,10 +12,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate output directory
-        run: 
-          mkdir -p public
-
       - name: Generate index.html
         run: |
           echo "<html>
@@ -60,10 +56,10 @@ jobs:
               <h1>We have migrated</h1>
               <p1>The notes have been migrated to a new location, found below</p1>
               <a href=\"https://notes-computational-biology.pages.dev/\">Visit the new location</a>
-              </body></html>" >> public/index.html
+              </body></html>" > index.html
 
 
-      - name: Upload PDFs to GitHub Pages
+      - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public
+          path: .
