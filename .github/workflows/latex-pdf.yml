@@ -55,10 +55,10 @@ jobs:
               </style>
           </head>
           <body>
-              <h1>We have migrated</h1>"
-          echo "<p1>The notes have been migrated to a new location, found below</p1>"
-          echo "<a href=\"https://notes-computational-biology.pages.dev/\">Visit the new location</a> "
-          echo "</body></html>" >> $INDEX
+              <h1>We have migrated</h1>
+              <p1>The notes have been migrated to a new location, found below</p1>
+              <a href=\"https://notes-computational-biology.pages.dev/\">Visit the new location</a>
+              </body></html>" >> $INDEX
 
 
       - name: Upload PDFs to GitHub Pages
